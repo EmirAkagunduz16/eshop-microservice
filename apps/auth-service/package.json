@@ -1,9 +1,13 @@
 {
-  "name": "@eshop-microservice/auth-service",
+  "name": "@./auth-service",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "node src/main.ts"
+    "dev": "node src/main.ts",
+    "prisma:generate": "prisma generate"
+  },
+  "prisma": {
+    "schema": "../../prisma/schema.prisma"
   },
   "nx": {
     "name": "auth-service",
