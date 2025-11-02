@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { ValidationError } from "@packages/error-handler/index";
-import { NextFunction, Response } from "express";
+import { Request, NextFunction, Response } from "express";
 import redis from "@packages/libs/redis";
 import { sendEmail } from "./sendMail";
 import prisma from "@packages/libs/prisma";
@@ -151,7 +151,7 @@ export const handleForgotPassword = async (
 export const verifyForgotPasswordOtp = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const { email, otp } = req.body;

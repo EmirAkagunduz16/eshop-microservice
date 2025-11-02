@@ -6,10 +6,8 @@
     "version": "1.0.0"
   },
   "host": "localhost:6001",
-  "basePath": "/",
-  "schemes": [
-    "http"
-  ],
+  "basePath": "/api",
+  "schemes": ["http"],
   "paths": {
     "/user-registration": {
       "post": {
@@ -101,6 +99,20 @@
     "/forgot-password-user": {
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -138,6 +150,23 @@
     "/verify-forgot-password-user": {
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "otp": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": ""

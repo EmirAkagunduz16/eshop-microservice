@@ -14,7 +14,7 @@ import {
   ValidationError,
 } from "@packages/error-handler/index";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { setCookie } from "../utils/cookies/setCookie";
 
 // Register a new user
@@ -131,6 +131,47 @@ export const loginUser = async (
   }
 };
 
+// refresh token user
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const refreshToken = req.cookies.refresh_token;
+    if (!refreshToken) {
+      return new ValidationError("Unauthorized! No refresh token provided.");
+    }
+
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET as string
+    ) as { id: string; role: string };
+
+    if (!decoded || !decoded.id || !decoded.role) {
+      return new JsonWebTokenError("Forbidden! Invalid refresh token");
+    }
+
+    // let account;
+    // if (decoded.role === "user") {
+    // }
+    const user = await prisma.users.findUnique({ where: { id: decoded.id } });
+    if (!user) {
+      return new AuthenticationError("Forbidden! User/Seller not found");
+    }
+
+    // generate new access token
+    const newAccessToken = jwt.sign(
+      { id: user.id, role: "user" },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      { expiresIn: "15m" }
+    );
+
+    setCookie(res, "access_token", newAccessToken);
+    return res.status(200).json({ success: true });
+  } catch (error) {}
+};
+
 // user forgot password
 export const userForgotPassword = async (
   req: Request,
@@ -144,10 +185,9 @@ export const userForgotPassword = async (
 export const verifyForgotPassword = async (
   req: Request,
   res: Response,
-  next: NextFunction,
-  userType: "user" | "seller"
+  next: NextFunction
 ) => {
-  await verifyForgotPasswordOtp(req, res, next, (userType = "user"));
+  await verifyForgotPasswordOtp(req, res, next);
 };
 
 // reset user password
