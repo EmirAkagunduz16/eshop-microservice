@@ -1,0 +1,62 @@
+
+> @eshop-microservice/source@0.0.0 dev
+> npx nx run-many --target=serve --all
+
+
+ NX   Running target serve for 2 projects and 2 tasks they depend on:
+
+- auth-service
+- @eshop-microservice/api-gateway
+
+
+
+> nx run auth-service:build  [local cache]
+
+> webpack-cli build --node-env=production
+
+chunk (runtime: main) [1m[32mmain.js[39m[22m (main) 33.5 KiB [1m[33m[entry][39m[22m [1m[32m[rendered][39m[22m
+webpack compiled [1m[32msuccessfully[39m[22m (49d26527e93d6cce)
+
+> nx run @eshop-microservice/api-gateway:build  [local cache]
+
+> webpack-cli build --node-env=production
+
+chunk (runtime: main) [1m[32mmain.js[39m[22m (main) 2.37 KiB [1m[33m[entry][39m[22m [1m[32m[rendered][39m[22m
+webpack compiled [1m[32msuccessfully[39m[22m (3b2613d079b894d8)
+Waiting for @eshop-microservice/api-gateway:serve:development in another nx process
+
+> nx run auth-service:serve:development
+
+NX Daemon is not running. Node process will not restart automatically after file changes.
+> nx run auth-service:build  [local cache]
+> webpack-cli build --node-env=production
+chunk (runtime: main) [1m[32mmain.js[39m[22m (main) 33.5 KiB [1m[33m[entry][39m[22m [1m[32m[rendered][39m[22m
+webpack compiled [1m[32msuccessfully[39m[22m (49d26527e93d6cce)
+ NX   Successfully ran target build for project auth-service
+Nx read the output from the cache instead of running the command for 1 out of 1 tasks.
+ NX   Nx Cloud encountered some problems
+This workspace is more than three days old and is not connected. Workspaces must be connected within 3 days of creation. Claim your workspace at https://cloud.nx.app
+Debugger listening on ws://localhost:9229/b1ce2bbf-080b-457f-a9d7-184df175e27c
+For help, see: https://nodejs.org/en/docs/inspector
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+Auth service listening on http://localhost:6001/api
+Swagger Docs available att http://localhost:6001/docs
+
+
+
+ NX   Running target serve for 2 projects and 2 tasks they depend on failed
+
+Tasks not run because their dependencies failed or --nx-bail=true:
+
+- @eshop-microservice/api-gateway:serve:development
+
+Failed tasks:
+
+- auth-service:serve:development
+
+
+ NX   Nx Cloud encountered some problems
+
+This workspace is more than three days old and is not connected. Workspaces must be connected within 3 days of creation. Claim your workspace at https://cloud.nx.app. (code: 401)
+

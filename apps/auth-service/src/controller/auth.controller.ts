@@ -18,9 +18,7 @@ import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { setCookie } from "../utils/cookies/setCookie";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2025-10-29.clover",
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {});
 
 // Register a new user
 export const userRegistration = async (
@@ -174,7 +172,9 @@ export const refreshToken = async (
 
     setCookie(res, "access_token", newAccessToken);
     return res.status(200).json({ success: true });
-  } catch (error) {}
+  } catch (error) {
+    return next(error);
+  }
 };
 
 // get logged in user
@@ -351,7 +351,7 @@ export const createShop = async (
       name,
       bio,
       address,
-      opening_hours,
+      openingHours: opening_hours,
       website,
       category,
       sellerId,
@@ -376,6 +376,16 @@ export const createStripeConnnectLink = async (
   next: NextFunction
 ) => {
   try {
+    // Check if Stripe API key is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error(
+        "❌ STRIPE_SECRET_KEY is not configured in environment variables"
+      );
+      throw new ValidationError(
+        "Stripe is not configured. Please contact support."
+      );
+    }
+
     const { sellerId } = req.body;
     if (!sellerId) {
       throw new ValidationError("Seller ID is required");
@@ -388,8 +398,8 @@ export const createStripeConnnectLink = async (
 
     const account = await stripe.accounts.create({
       type: "express",
-      email: seller?.email,
-      country: "US",
+      email: seller.email,
+      country: seller.country,
       capabilities: {
         card_payments: { requested: true },
         transfers: { requested: true },
@@ -402,14 +412,14 @@ export const createStripeConnnectLink = async (
     });
 
     // create stripe account link
-    const accountLink = stripe.accountLinks.create({
+    const accountLink = await stripe.accountLinks.create({
       account: account.id,
       refresh_url: `http://localhost:3000/success`,
       return_url: `http://localhost:3000/success`,
       type: "account_onboarding",
     });
 
-    res.status(200).json({ url: (await accountLink).url });
+    res.status(200).json({ url: accountLink.url });
   } catch (error) {
     next(error);
   }

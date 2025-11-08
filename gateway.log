@@ -1,0 +1,16 @@
+Loading .env from: /home/emir/Desktop/MicroServiceProjects/eshop-microservice/.env
+[dotenv@17.2.3] injecting env (10) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+Listening at http://localhost:8080/api
+[0mPOST /api/seller-registration [32m200[0m 4063.768 ms - 60[0m
+[0mPOST /api/verify-seller [32m201[0m 1038.701 ms - 149[0m
+[0mPOST /api/create-shop [32m201[0m 526.215 ms - 404[0m
+[0mPOST /api/create-stripe-link [31m500[0m 839.726 ms - 33[0m
+[0mPOST /api/seller-registration [32m200[0m 2510.800 ms - 60[0m
+[0mPOST /api/verify-seller [32m201[0m 1175.359 ms - 149[0m
+[0mPOST /api/create-shop [32m201[0m 706.232 ms - 404[0m
+[0mPOST /api/create-stripe-link [31m500[0m 808.024 ms - 33[0m
+[0mPOST /api/seller-registration [32m200[0m 4321.879 ms - 60[0m
+[0mPOST /api/verify-seller [32m201[0m 1057.315 ms - 149[0m
+[0mPOST /api/create-shop [32m201[0m 551.448 ms - 404[0m
+[0mPOST /api/create-stripe-link [31m500[0m 933.960 ms - 33[0m
+[0mPOST /api/seller-registration [33m400[0m 2241.135 ms - 69[0m

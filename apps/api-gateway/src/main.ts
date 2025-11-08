@@ -6,8 +6,14 @@ import { rateLimit, ipKeyGenerator } from "express-rate-limit";
 import swaggerUi from "swagger-ui-express";
 import axios from "axios";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 
 import * as path from "path";
+
+// Load environment variables from .env file
+const envPath = path.resolve(process.cwd(), '.env');
+console.log('Loading .env from:', envPath);
+dotenv.config({ path: envPath });
 
 const app = express();
 

@@ -4,6 +4,13 @@ import { errorMiddleware } from "@packages/error-handler/error-middleware";
 import cookieParser from "cookie-parser";
 import router from "./routes/auth.router";
 import swaggerUi from "swagger-ui-express";
+import dotenv from "dotenv";
+import path from "path";
+
+// Load environment variables from .env file
+const envPath = path.resolve(process.cwd(), '.env');
+console.log('Loading .env from:', envPath);
+dotenv.config({ path: envPath });
 
 const swaggerDocument = require("./swagger-output.json");
 
