@@ -124,8 +124,9 @@ export const handleForgotPassword = async (
 
     // find user/seller in DB
     const user =
-      userType === "user" &&
-      (await prisma.users.findUnique({ where: { email } }));
+      userType === "user"
+        ? await prisma.users.findUnique({ where: { email } })
+        : await prisma.sellers.findUnique({ where: { email } });
 
     if (!user) {
       throw new ValidationError(
@@ -138,7 +139,13 @@ export const handleForgotPassword = async (
     await trackOtpRequest(email, next);
 
     // Generate OTP and send email
-    await sendOtp(user.name, email, "forgot-password-user-mail");
+    await sendOtp(
+      user.name,
+      email,
+      userType === "user"
+        ? "forgot-password-user-mail"
+        : "forgot-password-seller-mail"
+    );
 
     res.status(200).json({
       message: "OTP sent to email. Please verify to reset your password.",

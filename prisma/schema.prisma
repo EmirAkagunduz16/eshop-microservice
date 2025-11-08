@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js" 
+  provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
 }
 
@@ -13,16 +13,67 @@ model images {
   file_id String
   url     String
   userId  String? @unique @db.ObjectId
+  shopId  String? @unique @db.ObjectId
   users   users?  @relation(fields: [userId], references: [id])
+  shops   shops?  @relation(fields: [shopId], references: [id])
 }
 
 model users {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String        @unique
+  password    String?
+  following   String[]
+  avatar      images?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  shopReviews shopReviews[]
+}
+
+model sellers {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String   @unique
-  password  String?
-  following String[]
-  avatar    images?
+  password  String
+  phone     String
+  country   String
+  stripeId  String?
+  shop      shops?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shopId    String?  @db.ObjectId
+  shopsId   String?  @db.ObjectId
+}
+
+model shops {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  bio          String?
+  category     String
+  logo         images?
+  coverBanner  String?
+  address      String
+  openingHours String?
+  website      String?
+  socialLinks  Json[]
+  ratings      Float         @default(0)
+  reviews      shopReviews[]
+  sellerId     String        @unique @db.ObjectId
+  sellers      sellers       @relation(fields: [sellerId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model shopReviews {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      users    @relation(fields: [userId], references: [id])
+  rating    Float
+  reviews   String?
+  shopId    String   @db.ObjectId
+  shops     shops    @relation(fields: [shopId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// model 

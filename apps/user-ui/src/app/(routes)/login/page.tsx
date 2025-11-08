@@ -80,10 +80,8 @@ const Login = () => {
             <div className="flex-1 border-t border-gray-300" />
           </div>
 
-          <form action="" onSubmit={handleSubmit(onSubmit)}>
-            <label className="block text-gray-700 mb-1" htmlFor="">
-              Email
-            </label>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <label className="block text-gray-700 mb-1">Email</label>
             <input
               type="email"
               placeholder="example@gmail.com"
@@ -102,9 +100,7 @@ const Login = () => {
               </p>
             )}
 
-            <label className="block text-gray-700 mb-1" htmlFor="">
-              Password
-            </label>
+            <label className="block text-gray-700 mb-1">Password</label>
             <div className="relative">
               <input
                 type={passwordVisible ? "text" : "password"}
