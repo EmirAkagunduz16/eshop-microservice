@@ -104,6 +104,9 @@ export const loginUser = async (
       throw new AuthenticationError("Invalid email or password");
     }
 
+    res.clearCookie("seller-access_token");
+    res.clearCookie("seller-refresh_token");
+
     // generate access and refresh token
     const accessToken = jwt.sign(
       { id: user.id, role: "user" },
@@ -134,14 +137,18 @@ export const loginUser = async (
   }
 };
 
-// refresh token user
+// refresh token
 export const refreshToken = async (
-  req: Request,
+  req: any,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const refreshToken = req.cookies.refresh_token;
+    const token =
+      req.cookies["refresh_token"] ||
+      req.cookies["seller-refresh_token"] ||
+      req.headers.authorization?.split(" ")[1];
+
     if (!refreshToken) {
       return new ValidationError("Unauthorized! No refresh token provided.");
     }
@@ -155,9 +162,16 @@ export const refreshToken = async (
       return new JsonWebTokenError("Forbidden! Invalid refresh token");
     }
 
-    // let account;
-    // if (decoded.role === "user") {
-    // }
+    let account;
+    if (decoded.role === "user") {
+      account = await prisma.users.findUnique({ where: { id: decoded.id } });
+    } else if (decoded.role === "seller") {
+      account = await prisma.sellers.findUnique({
+        where: { id: decoded.id },
+        include: { shop: true },
+      });
+    }
+
     const user = await prisma.users.findUnique({ where: { id: decoded.id } });
     if (!user) {
       return new AuthenticationError("Forbidden! User/Seller not found");
@@ -170,8 +184,15 @@ export const refreshToken = async (
       { expiresIn: "15m" }
     );
 
-    setCookie(res, "access_token", newAccessToken);
-    return res.status(200).json({ success: true });
+    if (decoded.role === "user") {
+      setCookie(res, "access_token", newAccessToken);
+    } else if (decoded.role === "seller") {
+      setCookie(res, "seller-access_token", newAccessToken);
+    }
+
+    req.role = decoded.role;
+
+    return res.status(201).json({ success: true });
   } catch (error) {
     return next(error);
   }
@@ -376,25 +397,31 @@ export const createStripeConnnectLink = async (
   next: NextFunction
 ) => {
   try {
-    // Check if Stripe API key is configured
+    console.log("🔵 Stripe link creation started...");
+
     if (!process.env.STRIPE_SECRET_KEY) {
-      console.error(
-        "❌ STRIPE_SECRET_KEY is not configured in environment variables"
-      );
-      throw new ValidationError(
-        "Stripe is not configured. Please contact support."
-      );
+      console.error("❌ STRIPE_SECRET_KEY is missing!");
+      throw new ValidationError("Stripe is not configured.");
     }
 
     const { sellerId } = req.body;
+    console.log("🔵 Seller ID:", sellerId);
+
     if (!sellerId) {
       throw new ValidationError("Seller ID is required");
     }
 
     const seller = await prisma.sellers.findUnique({ where: { id: sellerId } });
+    console.log("🔵 Seller found:", seller);
+
     if (!seller) {
       throw new ValidationError("Seller not found");
     }
+
+    console.log("🔵 Creating Stripe account with:", {
+      email: seller.email,
+      country: seller.country,
+    });
 
     const account = await stripe.accounts.create({
       type: "express",
@@ -406,12 +433,13 @@ export const createStripeConnnectLink = async (
       },
     });
 
+    console.log("✅ Stripe account created:", account.id);
+
     await prisma.sellers.update({
       where: { id: sellerId },
       data: { stripeId: account.id },
     });
 
-    // create stripe account link
     const accountLink = await stripe.accountLinks.create({
       account: account.id,
       refresh_url: `http://localhost:3000/success`,
@@ -419,8 +447,12 @@ export const createStripeConnnectLink = async (
       type: "account_onboarding",
     });
 
+    console.log("✅ Account link created:", accountLink.url);
+
     res.status(200).json({ url: accountLink.url });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("❌ STRIPE ERROR:", error.message);
+    console.error("❌ Full error:", error);
     next(error);
   }
 };
@@ -445,6 +477,9 @@ export const loginSeller = async (
     if (!isPasswordValid) {
       throw new AuthenticationError("Invalid email or password");
     }
+
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
 
     // generate access and refresh token
     const accessToken = jwt.sign(
