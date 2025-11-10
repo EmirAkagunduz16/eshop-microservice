@@ -75,3 +75,8 @@ model shopReviews {
 }
 
 // model 
+model site_configs {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  categories    String[]
+  subCategories Json[]
+}
