@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 // import swaggerUi from "swagger-ui-express";
 import dotenv from "dotenv";
 import path from "path";
+import router from "./routes/product.router";
 
 // Load environment variables from .env file
 const envPath = path.resolve(process.cwd(), ".env");
@@ -36,7 +37,7 @@ app.get("/", (req, res) => {
 // });
 
 // Routes
-// app.use("/api", router);
+app.use("/api", router);
 
 app.use(errorMiddleware);
 

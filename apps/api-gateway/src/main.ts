@@ -43,8 +43,8 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.use("/", proxy("http://localhost:6001")); // auth-service
 app.use("/product", proxy("http://localhost:6002")); // product-service
+app.use("/", proxy("http://localhost:6001")); // auth-service
 
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 
