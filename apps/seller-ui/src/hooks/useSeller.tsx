@@ -17,8 +17,12 @@ const useSeller = () => {
   } = useQuery({
     queryKey: ["seller"],
     queryFn: fetchSeller,
-    staleTime: 100 * 60 * 5,
+    staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
     retry: 1,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   return { seller, isLoading, isError, refetch };

@@ -22,7 +22,7 @@ const ColorSelector = ({ control, errors }: any) => {
     <div className="mt-2">
       <label className="block font-semibold text-gray-300 mb-1">Colors</label>
       <Controller
-        name="Colors"
+        name="colors"
         control={control}
         render={({ field }) => (
           <div className="flex gap-3 flex-wrap">
