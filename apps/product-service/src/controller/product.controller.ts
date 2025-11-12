@@ -346,3 +346,46 @@ export const deleteProduct = async (
     return next(error);
   }
 };
+
+// restore product
+export const restoreProduct = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { productId } = req.params;
+    const sellerId = req.seller?.shop?.id;
+
+    const product = await prisma.products.findUnique({
+      where: { id: productId },
+      select: { id: true, shopId: true, isDeleted: true },
+    });
+
+    if (!product) {
+      return next(new ValidationError("Product not found"));
+    }
+
+    if (product.shopId !== sellerId) {
+      return next(
+        new ValidationError("You are not authorized to restore this product")
+      );
+    }
+
+    if (!product.isDeleted) {
+      return res.status(400).json({ message: "Product is not deleted" });
+    }
+
+    await prisma.products.update({
+      where: { id: productId },
+      data: { isDeleted: false, deletedAt: null },
+    });
+
+    return res.status(200).json({ 
+      success: true,
+      message: "Product restored successfully" 
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Error restoring product", error });
+  }
+};

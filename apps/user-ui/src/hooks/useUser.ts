@@ -3,9 +3,12 @@ import axiosInstance from "../utils/axiosInstance";
 
 // fetch user data hook
 const fetchUser = async () => {
-  const repsonse = await axiosInstance.get("/api/logged-in-user");
-
-  return repsonse.data.user;
+  try {
+    const repsonse = await axiosInstance.get("/api/logged-in-user");
+    return repsonse.data.user || null;
+  } catch (error) {
+    return null;
+  }
 };
 
 const useUser = () => {
